@@ -1,7 +1,16 @@
-#!/usr/bin/env bash
-# Configures Ngix to run and listen on port  80
+#!/bin/bash
 
-rm /etc/ngix/sites/-enabled/default
-ln -s /etc/ngix/sites-available/default /etc/ngix/sites-enabled/default
-service ngix restart
+# Update package list and install Nginx
+apt-get update -y
+apt-get install -y nginx
+
+# Ensure Nginx is configured to listen on port 80 for all IPv4 IPs
+sed -i 's/listen 80 default_server;/listen 0.0.0.0:80 default_server;/' /etc/nginx/sites-available/default
+sed -i 's/listen \[::\]:80 default_server;/listen \[::\]:80 default_server;/' /etc/nginx/sites-available/default
+
+# Restart Nginx service to apply changes
+systemctl restart nginx
+
+# Ensure Nginx starts on boot
+systemctl enable nginx
 
